@@ -1,0 +1,237 @@
+type: street
+group: 0
+color: (235, 55, 41)
+name: ЖИТНАЯ УЛ.
+cost: 60
+house_cost: 50
+rent: 2, 10, 30, 90, 160, 250
+collateral_value: 30
+
+type: street
+group: 0
+color: (235, 55, 41)
+name: НАГАТИНСКАЯ УЛ.
+cost: 60
+house_cost: 50
+rent: 4, 20, 60, 180, 320, 450
+collateral_value: 30
+
+type: street
+group: 1
+color: (255, 243, 1)
+name: ВАРШАВСКОЕ ШОССЕ
+cost: 100
+house_cost: 50
+rent: 6, 30, 90, 270, 400, 550
+collateral_value: 50
+
+type: street
+group: 1
+color: (255, 243, 1)
+name: УЛ. ОГАРЕВА
+cost: 100
+house_cost: 50
+rent: 6, 30, 90, 270, 400, 550
+collateral_value: 50
+
+type: street
+group: 1
+color: (255, 243, 1)
+name: ПЕРВАЯ ПАРКОВАЯ УЛ.
+cost: 120
+house_cost: 50
+rent: 8, 40, 100, 300, 450, 600
+collateral_value: 60
+
+type: street
+group: 2
+color: (162, 50, 126)
+name: УЛ. ПОЛЯНКА
+cost: 140
+house_cost: 100
+rent: 10, 50, 150, 450, 625, 750
+collateral_value: 70
+
+type: street
+group: 2
+color: (162, 50, 126)
+name: УЛ. СРЕТЕНКА
+cost: 140
+house_cost: 100
+rent: 10, 50, 150, 450, 625, 750
+collateral_value: 70
+
+type: street
+group: 2
+color: (162, 50, 126)
+name: РОСТОВСКАЯ НАБ.
+cost: 160
+house_cost: 100
+rent: 12, 60, 180, 500, 700, 900
+collateral_value: 80
+
+type: street
+group: 3
+color: (247, 133, 44)
+name: РЯЗАНСКИЙ ПРОСПЕКТ
+cost: 180
+house_cost: 100
+rent: 14, 70, 200, 550, 750, 950
+collateral_value: 90
+
+type: street
+group: 3
+color: (247, 133, 44)
+name: УЛ. ВАВИЛОВА
+cost: 180
+house_cost: 100
+rent: 14, 70, 200, 550, 750, 950
+collateral_value: 90
+
+type: street
+group: 3
+color: (247, 133, 44)
+name: РУБЛЕВСКОЕ ШОССЕ
+cost: 200
+house_cost: 100
+rent: 16, 80, 220, 600, 800, 1000
+collateral_value: 90
+
+type: street
+group: 4
+color: (255, 243, 1)
+name: УЛ. ТВЕРСКАЯ
+cost: 220
+house_cost: 150
+rent: 18, 90, 250, 700, 875, 1050
+collateral_value: 110
+
+type: street
+group: 4
+color: (255, 243, 1)
+name: ПУШКИНСКАЯ УЛ.
+cost: 220
+house_cost: 150
+rent: 18, 90, 250, 700, 875, 1050
+collateral_value: 110
+
+type: street
+group: 4
+color: (255, 243, 1)
+name: ПЛОЩАДЬ МАЯКОВСКОГО
+cost: 240
+house_cost: 150
+rent: 20, 100, 300, 750, 925, 1100
+collateral_value: 120
+
+type: street
+group: 5
+color: (235, 55, 41)
+name: УЛ. ГРУЗИНСКИЙ ВАЛ
+cost: 260
+house_cost: 150
+rent: 22, 110, 330, 800, 975, 1150
+collateral_value: 130
+
+type: street
+group: 5
+color: (235, 55, 41)
+name: УЛ. ЧАЙКОВСКОГО
+cost: 260
+house_cost: 150
+rent: 22, 110, 330, 800, 975, 1150
+collateral_value: 130
+
+type: street
+group: 5
+color: (235, 55, 41)
+name: СМОЛЕНСКАЯ ПЛОЩАДЬ
+cost: 280
+house_cost: 150
+rent: 24, 120, 360, 850, 1025, 1200
+collateral_value: 140
+
+type: street
+group: 6
+color: (54, 180, 96)
+name: УЛ. ЩУСЕВА
+cost: 300
+house_cost: 200
+rent: 26, 130, 390, 900, 1100, 1275
+collateral_value: 150
+
+type: street
+group: 6
+color: (54, 180, 96)
+name: ГОГОЛЕВСКИЙ БУЛЬВАР
+cost: 300
+house_cost: 200
+rent: 26, 130, 390, 900, 1100, 1275
+collateral_value: 150
+
+type: street
+group: 6
+color: (54, 180, 96)
+name: КУТУЗОВСКИЙ ПРОСПЕКТ
+cost: 320
+house_cost: 200
+rent: 28, 150, 450, 1000, 1200, 1400
+collateral_value: 160
+
+type: street
+group: 7
+color: (48, 129, 195)
+name: УЛ. МАЛАЯ БРОННАЯ
+cost: 350
+house_cost: 200
+rent: 35, 175, 500, 1100, 1300, 1500
+collateral_value: 175
+
+type: street
+group: 7
+color: (48, 129, 195)
+name: УЛ. АРБАТ
+cost: 400
+house_cost: 200
+rent: 50, 200, 600, 1400, 1700, 2000
+collateral_value: 200
+
+type: railway
+group: 8
+name: РИЖСКАЯ ЖЕЛЕЗНАЯ ДОРОГА
+cost: 200
+rent: 25, 50, 100, 200
+collateral_value: 100
+
+type: railway
+group: 8
+name: КУРСКАЯ ЖЕЛЕЗНАЯ ДОРОГА
+cost: 200
+rent: 25, 50, 100, 200
+collateral_value: 100
+
+type: railway
+group: 8
+name: КАЗАНСКАЯ ЖЕЛЕЗНАЯ ДОРОГА
+cost: 200
+rent: 25, 50, 100, 200
+collateral_value: 100
+
+type: railway
+group: 8
+name: ЛЕНИНГРАДСКАЯ ЖЕЛЕЗНАЯ ДОРОГА
+cost: 200
+rent: 25, 50, 100, 200
+collateral_value: 100
+
+type: utilities
+group: 9
+name: ЭЛЕКТРОСТАНЦИЯ
+cost: 150
+collateral_value: 75
+
+type: utilities
+group: 9
+name: ВОДОПРОВОД
+cost: 150
+collateral_value: 75
