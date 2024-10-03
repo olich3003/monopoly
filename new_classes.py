@@ -4,8 +4,6 @@ import re
 import random
 import enum
 
-all_others = {'go': 'ВПЕРЕД', 'treasury': 'ОБЩЕСТВЕННАЯ КАЗНА', 'tax': 'ПОДОХОДНЫЙ НАЛОГ', 'chance': 'ШАНС', 'super tax': 'СВЕРХНАЛОГ', 
-              'prison': 'ТЮРЬМА', 'relax': 'БЕСПЛАТНАЯ СТОЯНКА', 'go to prison': 'ОТПРАВЛЯЙСЯ В ТЮРЬМУ'}
 
 
 
@@ -24,6 +22,7 @@ class SpecialCardType(enum.Enum):
     GO = 11
     PRISON = 12
 
+# попробовать перенести в dataclass
 class SpecialCard:
     def __init__(self, text, type, value):
         self.text = text
@@ -35,14 +34,14 @@ class SpecialCards:
     def __init__(self, all_streets):
         self.chance = list()
         self.treasury = list()
-        self.image_types = {'get' : [SpecialCardType.GET, SpecialCardType.GET_EVERYONE],
+        self.image_types = {'get' : [SpecialCardType.GET, SpecialCardType.GET_EVERYONE], # лучше использовать не список, а множество set
                             'move' : [SpecialCardType.MOVE, SpecialCardType.NEAREST_RAILWAY, SpecialCardType.NEAREST_UTILITIES, SpecialCardType.GO, SpecialCardType.GO_BACK, SpecialCardType.GO_FORWARD],
                             'pay' : [SpecialCardType.PAY, SpecialCardType.PAY_EVERYONE],
                             'go_prison' : [SpecialCardType.PRISON],
                             'jail_free' : [SpecialCardType.JAIL_FREE],
                             'repair' : [SpecialCardType.REPAIR]}
         
-        '''# все карточки move в шансе
+        # все карточки move в шансе
         streets_len = len(all_streets)
         for street_n in random.sample(range(streets_len), 5):
             self.chance.append(SpecialCard(text=f'Отправляйтесь на поле {all_streets[street_n].name}',
@@ -149,7 +148,7 @@ class SpecialCards:
             text = f'Перейдите на {step} шагов вперед'
             self.chance.append(SpecialCard(text=text,
                                            type=SpecialCardType.GO_FORWARD,
-                                           value=step))'''
+                                           value=step))
 
         # карточки prison в шансе и казне
         text = 'Отправляйтесь в тюрьму. Не проходите поле "ВПЕРЕД" и не получайте 200$'
@@ -178,8 +177,8 @@ class SpecialCards:
     def draw_special_card(self, img, card_type, card=None):
         image = Image.open(img)
         draw = ImageDraw.Draw(image)
-        rec_coef = 1.6
-        rec_h = 0.2
+        rec_coef = 1.6 # вынести в конфиг config_special_card
+        rec_h = 0.2 # вынести в конфиг config_special_card
         x_0 = 0.5 * field_width - 0.5 * rec_coef * rec_h * field_width
         y_0 = 0.5 * field_width - 0.5 * rec_h * field_width
         x_1 = 0.5 * field_width + 0.5 * rec_coef * rec_h * field_width
@@ -199,7 +198,7 @@ class SpecialCards:
             image.paste(picture, (x - width // 2, y - height // 2), picture)
         else: # отрисовка лицевой стороны карточки
             draw.rectangle([(x_0, y_0), (x_1, y_1)],outline=(0,0,0), width=5, fill='white')
-            small_rec_shift = 0.009 * field_width
+            small_rec_shift = 0.009 * field_width # вынести 0,009 в конфиг config_special_card
             draw.rectangle([(x_0 + small_rec_shift, y_0 + small_rec_shift), (x_1 - small_rec_shift, y_1 - small_rec_shift)],
                             outline=(0, 0, 0), fill='white', width=3)
             
@@ -215,7 +214,7 @@ class SpecialCards:
 
             # отрисовка текста карочки
 
-            content_split = 0.7
+            content_split = 0.7 # вынести в конфиг config_special_card
             content_width = x_1 - x_0 - 5 * small_rec_shift
             content_height = y_1 - y_0 - title_height - 5 * small_rec_shift
             x_0_text = x_0 + 2 * small_rec_shift
@@ -223,7 +222,7 @@ class SpecialCards:
             x_1_text = x_0 + 2 * small_rec_shift + content_width * content_split
             y_1_text = y_0 + 3 * small_rec_shift + title_height + content_height
             font = ImageFont.truetype('draw/Cygre.ttf', 26)
-            max_chars_per_line = 20
+            max_chars_per_line = 20 # вынести в конфиг config_special_card
             wrapped_text = textwrap.wrap(card.text, width=max_chars_per_line)
             formatted_text = "\n".join(wrapped_text)
             left, top, right, bottom = draw.multiline_textbbox((0, 0), text=formatted_text, font=font)
@@ -261,7 +260,7 @@ class SpecialCards:
         card = user.special_card[0]
         if card.type == SpecialCardType.MOVE: # тип карты перейти на поле ...
             if user.cell >= card.value:
-                user.budget += 200
+                user.budget += 200 # брать из конфига
             user.cell = card.value
 
         elif card.type == SpecialCardType.GET: # получи
@@ -274,8 +273,9 @@ class SpecialCards:
             user.jail_free += 1
 
         elif card.type == SpecialCardType.NEAREST_RAILWAY: # ближайшая ж/д
+            # дважды используется функция поиска ближайшей карточки, так что вынести в отдельную функцию
             new_cell = 5
-            for i in [5, 15, 25, 35]:
+            for i in [5, 15, 25, 35]: # не нравится обращение к странному списку
                 if i > user.cell:
                     new_cell = i
                     break
@@ -284,8 +284,9 @@ class SpecialCards:
             user.cell = new_cell
 
         elif card.type == SpecialCardType.NEAREST_UTILITIES: # ближайшее коммунальное
+            # вынести в отдельную функцию
             new_cell = 12
-            for i in [12, 28]:
+            for i in [12, 28]: 
                 if i > user.cell:
                     new_cell = i
                     break
@@ -302,23 +303,26 @@ class SpecialCards:
             user.budget -= players_amount * card.value
             for player in user.cur_room.users:
                 if player != user:
-                    player.budget += card.value
+                    player.budget += card.value # не очень хорошо обращаться к перенной напрямую, лучше сделать сеттер player.change_bunget(card.value)
 
         elif card.type == SpecialCardType.GET_EVERYONE: # получи от каждого
             players_amount = len(user.cur_room.users) - 1
             user.budget += players_amount * card.value
             for player in user.cur_room.users:
                 if player != user:
-                    player.budget -= card.value
+                    player.budget -= card.value # не очень хорошо обращаться к перенной напрямую, лучше сделать сеттер player.change_bunget(-card.value)
+
 
         elif card.type == SpecialCardType.GO_BACK: # иди назад на ... шагов
+            # перемещения пользователя тоже лучше вынести в отдельную функцию класса
             new_cell = user.cell - card.value
             user.cell = new_cell
 
         elif card.type == SpecialCardType.GO_FORWARD: # иди вперед на ... шагов
+            # перемещения пользователя тоже лучше вынести в отдельную функцию класса
             new_cell = user.cell + card.value
             if user.cell >= new_cell:
-                user.budget += 200
+                user.budget += 200 # прибавку в бюджет тоже можно сделать в функции 
             user.cell = new_cell
         
         elif card.type == SpecialCardType.GO: # иди на поле "вперед"
@@ -327,7 +331,7 @@ class SpecialCards:
 
         elif card.type == SpecialCardType.PRISON: # отправляйся в тюрьму
             user.prisoner = True
-            user.cell = 10
+            user.cell = 10 # сделать user.move_to(10) + само число 10 тоже должно быть где-то в конфиге
 
         
         
@@ -379,38 +383,42 @@ class User:
         self.chat_id = chat_id
         self.last_message_id = None
         self.last_dices_value = 0
+        self.chip_type = None
         self.chip = None
         self.chip_color = None
         self.cell = 0
         self.property = []
-        self.kits = []
-        self.houses_amount = 0
-        self.hotels_amount = 0
-        self.doubles = 0
-        self.prisoner = False
+        self.kits = [] # не хранить, а считать функцией
+        self.houses_amount = 0 # не хранить, а считать функцией
+        self.hotels_amount = 0 # не хранить, а считать функцией
+        self.doubles = 0 
+        self.prisoner = False # is_prisoner
         self.turns_in_prison = 0
         self.jail_free = 0
-        self.jail_doubles = False
         self.jail_reason = ''
+        # вроде можно сделать списком достпных действий self.actions = set(освобождение по дублям ...)
         self.special_card = None
         
 
 class Room:
-    def __init__(self, size, time, id, bot):
-        self.users = list()
+    def __init__(self, size, id, admin, streets_type, bot):
+        self.users = list()        
         self.size = size
-        self.move_time = time
         self.id = id
+        self.admin = admin
         self.now_player = -1
         self.bot = bot
-        self.file = 'streets.txt'
-        self.field = 'field.png'
-        self.field_with_chips = 'field_with_chips.png'
-        self.cards = 'all_cards.png'
+        self.streets_type = streets_type
         self.all_streets = []
+        self.streets_file = None
+        self.field = None
+        self.cards = None
+        self.field_color = (202, 232, 224)
+        self.all_others = {'go': 'ВПЕРЕД', 'treasury': 'ОБЩЕСТВЕННАЯ КАЗНА', 'tax': 'ПОДОХОДНЫЙ НАЛОГ', 'chance': 'ШАНС', 'super tax': 'СВЕРХНАЛОГ', 
+              'prison': 'ТЮРЬМА', 'relax': 'БЕСПЛАТНАЯ СТОЯНКА', 'go to prison': 'ОТПРАВЛЯЙСЯ В ТЮРЬМУ'}
         self.special_cards = None
         self.image_items_list = []
-        self.output_image = 'field_output.png'
+        self.output_image = None # брать из конфига
 
     def create_cards(self, file, all_streets):
         # Читаем содержимое файла
@@ -445,6 +453,7 @@ class Room:
             else:
                 all_streets.append(Utilities(card_data))
             #print(all_streets, len(all_streets))
+        
         self.special_cards = SpecialCards(all_streets)
 
 
@@ -456,7 +465,8 @@ class Room:
         draw_streets_borders(draw)
         draw_prison(draw)
         draw_streets_colors(draw)
-        self.create_cards(self.file, self.all_streets)
+
+        self.create_cards(self.streets_file, self.all_streets)
         for i in range(len(field_number_and_cell)):
             field_card = field_number_and_cell[i]
             if i % 10 == 0:
@@ -481,24 +491,32 @@ class Room:
                 draw_streets_costs(draw, str(street.cost) + '$', x, y)
             else:
                 x, y = calculate_coordinates_for_streets(i, 'other')
-                draw_streets_titles(draw, all_others[field_card], x, y)
+                draw_streets_titles(draw, self.all_others[field_card], x, y)
             x, y = calculate_coordinates_for_pictures(i)
             draw_cells_pictures(im, int(x), int(y), i)
         im = im.rotate(90, expand=True)
         draw = ImageDraw.Draw(im)
-        im.save(f'field.png')
+        im.save(f'Room_{self.id}/field.png')
+        im.save(f'Room_{self.id}/field_output.png')
+        self.field = f'Room_{self.id}/field.png'
+        self.output_image = f'Room_{self.id}/field_output.png'
         await self.start_game(update, context)
 
 
     def generating_chips(self):
         for i in range(len(self.users)):
-            size = (coef_y, coef_y)
-            img = Image.new('RGBA', size, (255,  255,  255,  0))
-            draw = ImageDraw.Draw(img)
-            draw.ellipse([0,  0, coef_y - 1, coef_y - 1], fill=chips_colors[i])
-            self.users[i].chip = f'chip_{i}.png'
+            if self.users[i].chip_type == 'custom':
+                img = Image.open(f'Users/user_{self.users[i].chat_id}_chip.png')
+                img.save(f'Room_{self.id}/chip_{i}.png')
+            else:
+                size = (coef_y, coef_y)
+                img = Image.new('RGBA', size, (255,  255,  255,  0))
+                draw = ImageDraw.Draw(img)
+                draw.ellipse([0,  0, coef_y - 1, coef_y - 1], fill=chips_colors[i])
+                img.save(f'Room_{self.id}/chip_{i}.png')
+            self.users[i].chip = f'Room_{self.id}/chip_{i}.png'
             self.users[i].chip_color = chips_colors[i]
-            img.save(f'chip_{i}.png')
+                
 
 
     def draw_houses(self, image, street_number, type, house_img, number):
@@ -524,8 +542,8 @@ class Room:
         picture = picture.resize((width, height))
         img.paste(picture, (x_1, y_1), picture)
         img = img.rotate(-90 * side)
-        img.save(f'f_with_house.png')
-        img.show()
+        img.save(f'Room_{self.id}/field.png')
+        #img.show()
 
 
     def draw_chip(self, img, x, y, user):
@@ -543,7 +561,7 @@ class Room:
 
 
     def draw_chips_in_prison(self, img, chips_list):
-        chip = Image.open(f'chip_0.png')
+        chip = Image.open(f'Room_{self.id}/chip_0.png')
         side = 1
         i = 10 * (side + 1)
         img = img.rotate(90 * side)
@@ -591,7 +609,7 @@ class Room:
     def draw_chips_positions(self, image, positions, output_image):
         #print('FUNCTION draw_chips_positions')
         img = Image.open(image)
-        chip = Image.open(f'chip_0.png')
+        chip = Image.open(f'Room_{self.id}/chip_0.png')
         chip_width = chip.width
         chip.close()
 
@@ -641,7 +659,8 @@ class Room:
                     counter += 1
             
             img = img.rotate(-90 * side)
-        img.save(output_image)
+        img.save(f'Room_{self.id}/field_output.png')
+        self.output_image = f'Room_{self.id}/field_output.png'
 
 
     def create_cards_images(self):
@@ -664,7 +683,7 @@ class Room:
                 else:
                     draw_card_info(draw, None, None, street.collateral_value, 
                                 x_1, x_2, new_y_1, y_2, 'utilities')
-        im.save(f'all_cards.png')
+        im.save(f'Room_{self.id}/cards.png')
 
     def draw_propetry(self, image, street_number, player):
         img = Image.open(image)
@@ -679,7 +698,7 @@ class Room:
         draw.rectangle([(x_1 + coef, y_1 + coef), (x_2 - coef, y_2 - coef)], fill=player.chip_color,
                         outline=(0, 0, 0, 128), width=1)
         img = img.rotate(-90 * side)
-        img.save(f'field.png')
+        img.save(f'Room_{self.id}/field.png')
 
     async def waiting_for_players(self, update, context):
         print('WAITING FOR PLAYERS')
@@ -702,8 +721,8 @@ class Room:
         for i, player in enumerate(self.users):
             player.status = 'gaming'
             player.budget = 1500
-            if i != (len(self.users) - 1):
-                await context.bot.delete_message(chat_id=player.chat_id, message_id=player.last_message_id)
+            #if i != (len(self.users) - 1):
+                #await context.bot.delete_message(chat_id=player.chat_id, message_id=player.last_message_id)
             if i == self.now_player: #сейчас ход i-го игрока
                 text = f"Цвет твоей фишки - {chips_colors_names[i]}\nТвой бюджет - {self.users[i].budget}$\nСейчас твой ход"
                 keyboard = [["Бросить кубики", "Моё имущество"], ["Все карточки"]]
@@ -792,10 +811,6 @@ class Room:
             ans = 'end'
         elif self.users[self.now_player].jail_free:
             ans = 'free'
-            if self.users[self.now_player].jail_doubles:
-                ans = 'both'
-        elif self.users[self.now_player].jail_doubles:
-            ans = 'doubles'
         return ans
 
 
@@ -822,6 +837,9 @@ class Room:
             self.image_items_list.append(('card_shirt', street))
             self.special_cards.generate_special_card(current_user, street)
             keyboard.append(['Открыть карточку'])
+        elif street == 'go' or street == 'prison':
+            keyboard.append(['Закончить ход'])
+        
         return text
     
 
@@ -851,6 +869,7 @@ class Room:
         current_user = self.users[self.now_player]
 
         if last_users_action == 'Открыть карточку':
+            print(' ОТКРЫТЬ КАРТОЧКУ\n')
             self.special_cards.processing_user(current_user)
             self.image_items_list.append(('front_card_side', current_user.special_card))
             print(current_user.special_card[0].type)
@@ -860,8 +879,7 @@ class Room:
             elif current_user.special_card[0].type == SpecialCardType.NEAREST_UTILITIES:
                 keyboard_cur.append(['Бросить кубики'])
             else:
-                keyboard_cur.append(["Моё имущество"])
-                keyboard_cur.append(['Закончить ход'])
+                keyboard_cur.append(["Моё имущество"], ['Закончить ход'])
         cell = self.users[self.now_player].cell
         street = field_number_and_cell[cell]
         print(cell, last_users_action)
@@ -874,19 +892,10 @@ class Room:
 
         if last_users_action == 'В тюрьме': # обработка тюрьмы
             condition = self.jail_turns()
-            if condition == 'both':
-                text_cur += f'Ты сейчас в тюрьме, но у тебя есть бесплатный выход, а еще тебе выпали дубли\n' \
-                            f'Ты можешь выйти из тюрьмы благодаря дублям, или использовать карточку "выход из тюрьмы"'
-                keyboard_cur.append(["Использовать карточку", "Выйти по дублям", "Отсаться в тюрьме"])
-                text_others += f'Игрок {current_user.name} в тюрьме\n'
-            elif condition == 'free':
+            if condition == 'free':
                 text_cur += f'Ты сейчас в тюрьме, но у тебя есть бесплатный выход\nХочешь его использовать?'
                 text_others += f'Игрок {current_user.name} в тюрьме\n'
                 keyboard_cur.append(["Использовать карточку", "Отсаться в тюрьме"])
-            elif condition == 'doubles':
-                text_cur += f'Ты сейчас в тюрьме, но тебе выпали дубли\nХочешь выйти из тюрьмы?'
-                text_others += f'Игрок {current_user.name} в тюрьме\n'
-                keyboard_cur.append(["Выйти из тюрьмы", "Отсаться в тюрьме"])
             elif condition == 'end':
                 text_cur += f'Ты честно отсидел 3 круга и выходишь из тюрьмы\n'
                 text_others += f'Игрок {current_user.name} выходит из тюрьмы\n'
@@ -923,8 +932,8 @@ class Room:
                         text_others += f'Сейчас ход игрока {current_user.name}\nОн попал на поле {street_name}'
                         keyboard_cur.append(["Моё имущество", "Закончить ход"])
             else: # если попал на поле (не улицу)
-                text_cur += f'Ты попал на поле {all_others[street]}\n'
-                text_others += f'Сейчас ход игрока {current_user.name}\nОн попал на поле {all_others[street]}'
+                text_cur += f'Ты попал на поле {self.all_others[street]}\n'
+                text_others += f'Сейчас ход игрока {current_user.name}\nОн попал на поле {self.all_others[street]}'
                 text_cur = self.processing_other_fields(street, current_user, text_cur, keyboard_cur)
                 keyboard_cur.append(["Моё имущество"])
 
@@ -934,7 +943,7 @@ class Room:
                 text_cur += f'Тебе не хватает денег для покупки поля {self.all_streets[street].name}'
                 text_others += f'Сейчас ход игрока {current_user.name}\nОн попал на поле {self.all_streets[street].name}'
             else:
-                self.draw_propetry('field.png', street, current_user)
+                self.draw_propetry(f'Room_{self.id}/field.png', street, current_user)
                 text_cur += f'Ты приобрел поле {self.all_streets[street].name}!'
                 text_others += f'Сейчас ход игрока {current_user.name}\nОн попал на поле {self.all_streets[street].name} и купил его'
             keyboard_cur.append(["Моё имущество", "Закончить ход"])
@@ -1025,14 +1034,14 @@ class Room:
         
         if current_user.budget >= self.all_streets[street_n].house_cost: # если бюджета игрока хватает на покупку дома
             if type == 'house':
-                house_img = 'house.png'
+                house_img = 'OrdinaryFiles/house.png'
                 current_user.houses_amount += 1
             else:
-                house_img = 'hotel.png'
+                house_img = 'OrdinaryFiles/hotel.png'
                 current_user.hotels_amount += 1
             current_user.budget -= self.all_streets[street_n].house_cost
             self.all_streets[street_n].houses += 1
-            self.draw_houses('field.png', street_n, type, house_img, house_n)
+            self.draw_houses(self.field, street_n, type, house_img, house_n)
             for i, user in enumerate(self.users):
                 if user == current_user:
                     await context.bot.send_message(chat_id=current_user.chat_id,
@@ -1079,11 +1088,40 @@ class Room:
                     else:
                         draw_card_info(draw, None, None, street.collateral_value, 
                                     x_1, x_2, new_y_1, y_2, 'utilities')
-            im.save(f'self_property.png')
-            await context.bot.send_photo(chat_id=current_user.chat_id, photo=open('self_property.png', 'rb'))
+            im.save(f'Room_{self.id}/self_property_{current_user.chat_id}.png')
+            await context.bot.send_photo(chat_id=current_user.chat_id, photo=open(f'Room_{self.id}/self_property_{current_user.chat_id}.png', 'rb'))
         #im.show()
 
-
+    async def send_other_property(self, update, context, current_user, other_user):
+        im = Image.new('RGB', (field_width + 1, field_width + 1), field_color)
+        draw = ImageDraw.Draw(im)
+        '''if current_user == self.now_player:
+            keyboard = [['Закончить ход']]
+        else:
+            keyboard=[]
+            reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)'''
+        if  len(other_user.property) == 0:
+            await context.bot.send_message(chat_id=current_user.chat_id, text='Упс! У этого игрока пока нет ни одной купленной улицы')
+        else:
+            create_cards_img(draw, len(other_user.property))
+            for number, i in enumerate(other_user.property):
+                street = self.all_streets[i]
+                x_1, x_2, y_1, y_2 = calculate_coord_for_cards(number)
+                if i < 22:
+                    new_y_1 = draw_cards_titles(draw, street.name, x_1, x_2, y_1, y_2, 'street', street.color)
+                    draw_card_info(draw, street.rent, street.house_cost, street.collateral_value,
+                                    x_1, x_2, new_y_1, y_2, 'street')
+                else:
+                    new_y_1 = draw_cards_titles(draw, street.name, x_1, x_2, y_1, y_2,'other', None)
+                    if i < 26:
+                        draw_card_info(draw, street.rent, None, street.collateral_value, 
+                                    x_1, x_2, new_y_1, y_2, 'railway')
+                    else:
+                        draw_card_info(draw, None, None, street.collateral_value, 
+                                    x_1, x_2, new_y_1, y_2, 'utilities')
+            im.save(f'Room_{self.id}/self_property_{other_user.chat_id}.png')
+            await context.bot.send_photo(chat_id=current_user.chat_id, photo=open(f'Room_{self.id}/self_property_{other_user.chat_id}.png', 'rb'))
+        #im.show()
 
     def get_field_with_chips(self, image, output_image):
         # заполняем словарь {поле: [список фишек]}
@@ -1117,11 +1155,29 @@ class Room:
             if i == self.now_player: #сейчас ход i-го игрока
                 text = f"Цвет твоей фишки - {chips_colors_names[i]}\nТвой бюджет - {self.users[i].budget}$\n" + text_cur
                 keyboard = keyboard_cur
+                for j, play in enumerate(self.users):
+                    if j != i:
+                        keyboard.append([f'Имущество {self.users[j].name}'])
                 reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=False)
             else:
                 text = f"Цвет твоей фишки - {chips_colors_names[i]}\nТвой бюджет - {self.users[i].budget}$\n" + text_others
                 keyboard = keyboard_others
+                for j, play in enumerate(self.users):
+                    if j != i:
+                        keyboard.append([f'Имущество {self.users[j].name}'])
                 reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=False)
             message = await context.bot.send_photo(chat_id=player.chat_id, photo=open(self.output_image, 'rb'), caption=text,
                                                 reply_markup=reply_markup)
             player.last_message_id = message.message_id
+
+
+
+
+
+
+    async def game_move(self, update, context):
+        #если попали на улицу и она свободна
+        text = f"Тебе выпало {context.chat_data['dice_1']} и {context.chat_data['dice_2']}"
+        keyboard = [["Купить улицу", "Не покупать улицу"], ["Моё имущество"], ["Информация о комнате", "Покинуть игру"]]
+        reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
+        await update.message.reply_text(text=text, reply_markup=reply_markup)

@@ -2,15 +2,17 @@ from telegram import Update, Message
 from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove, KeyboardButton 
 from telegram.ext import ApplicationBuilder, Application, ContextTypes, CallbackContext, filters
+import sqlite3 as sl
+
 
 TOKEN = '6824532109:AAHzoM0Jc3VCn5b87HsB6DV-3LFbVKbJs7g'
 bot = ApplicationBuilder().token(TOKEN).build()
 job = bot.job_queue
 MAX_T = 60
 PERIOD = 5
-DEBAG = True
+DEBAG = False
 HOD = 0
-hods = [2, 7, 17, 22, 33, 36, 2, 7, 17, 22, 33, 36, 2, 7, 17, 22, 33, 36, 2, 7, 17, 22, 33, 36]
+hods = [30, 30, 30, 30, 30, 30]
 
 field_number_and_cell = { 0: 'go', 1: 0, 2: 'treasury', 3: 1, 4: 'tax', 5: 22, 6: 2, 7: 'chance', 8: 3, 9: 4, 10: 'prison', 11: 5,
                 12: 26, 13: 6, 14: 7, 15: 23, 16: 8, 17: 'treasury', 18: 9, 19: 10, 20: 'relax', 21: 11, 22: 'chance',
